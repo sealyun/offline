@@ -1,7 +1,7 @@
-name: Docker Image CI
+name: Build Amd64 Offline Image
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   schedule:
     - cron:  '0 6 * * *'
 
@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     
-      - name: Install gh cli and login
+      - name: Install cloud-kernel and run
+        env:
+          ak: ${{ secrets.AK }}
+          sk: ${{ secrets.SK }}
+          token: ${{ secrets.MARKETCTL }}
         run: |
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-          sudo apt-add-repository https://cli.github.com/packages
-          sudo apt update
-          sudo apt install gh
-          gh version
-          gh auth login --with-token <<< ${{ secrets.gh_token }}
+          CLOUD_URL=$(curl -LsSf https://api.github.com/repos/sealyun/cloud-kernel/releases/latest | jq -r ".assets[0].browser_download_url")
+          wget -c $CLOUD_URL -O cloud-kernel && chmod +x cloud-kernel
+          export PATH=${PATH}:$(pwd)
+          cloud-kernel --ak $ak --sk $sk --marketctl $token
