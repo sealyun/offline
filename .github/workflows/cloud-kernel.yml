@@ -1,0 +1,20 @@
+name: Docker Image CI
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron:  '0 6 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Install gh cli and login
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh
+          gh version
+          gh auth login --with-token <<< ${{ secrets.gh_token }}
