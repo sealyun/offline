@@ -19,4 +19,4 @@ jobs:
           CLOUD_URL=$(curl -LsSf https://api.github.com/repos/sealyun/cloud-kernel/releases/latest | jq -r ".assets[0].browser_download_url")
           wget -c $CLOUD_URL -O cloud-kernel && chmod +x cloud-kernel
           export PATH=${PATH}:$(pwd)
-          cloud-kernel --ak $ak --sk $sk --marketctl $token
+          cloud-kernel run --ak $ak --sk $sk --marketctl $token
