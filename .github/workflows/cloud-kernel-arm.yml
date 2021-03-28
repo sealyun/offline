@@ -1,0 +1,22 @@
+name: Build Arm64 Offline Image
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron:  '0 6 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Install cloud-kernel and run
+        env:
+          ak: ${{ secrets.AK_HW }}
+          sk: ${{ secrets.SK_HW }}
+          token: ${{ secrets.MARKETCTL_ARM }}
+        run: |
+          CLOUD_URL=$(curl -LsSf https://api.github.com/repos/sealyun/cloud-kernel/releases/latest | jq -r ".assets[0].browser_download_url")
+          wget -c $CLOUD_URL -O cloud-kernel && chmod +x cloud-kernel
+          export PATH=${PATH}:$(pwd)
+          cloud-kernel run --ak $ak --sk $sk --marketctl $token --arm64 --price 99 --zoro-price 10
